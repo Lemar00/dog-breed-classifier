@@ -43,34 +43,35 @@ Fichier de composition Docker permettant de démarrer facilement tous les servic
 - **frontend** : Interface web utilisateur.
 - (optionnel) **MLflow** ou **PostgreSQL** si tu veux étendre la stack.
 
-Ce fichier permet de démarrer l’ensemble du projet avec une seule commande : ```bash docker-compose up --build
+Ce fichier permet de démarrer l’ensemble du projet (backEnd et FrontEnd) avec une seule commande : ```bash docker-compose up --build
 
 
 Le modèle entraîné est disponible sur Google Drive. Vous pouvez le télécharger en utilisant le lien ci-dessous :
 
-[Télécharger le modèle entraîné (model_best.keras)](https://drive.google.com/file/d/1IkLReT9dNKQiimy8Vl5Oi9MAz0BNAr2v/view?usp=sharing)
+[Télécharger le modèle entraîné (mobilenetv2_best.keras qui est notre best Model d'apres les metrics)](dans le dossier /Model)
 
 ### Instructions pour Utiliser le Modèle
 
-1. Téléchargez le modèle à partir du lien ci-dessus.
-2. Placez le fichier `model_best.keras` dans le répertoire `streamlit_app`.
+1. Téléchargez le modèle dans ce dossier.
+2. Placez le fichier `mobilenetv2_best.keras` dans le répertoire `/app`.
 
 ## Obtenir le Dataset
 
-Le projet utilise le dataset Garbage Classification de Kaggle pour l'entraînement et la validation du modèle. Vous pouvez le télécharger à partir du lien suivant :
+Le projet utilise le dataset Dog Classification de Stanford Dogs Dataset pour l'entraînement et la validation du modèle. Vous pouvez le télécharger à partir du lien suivant :
 
-[**Télécharger le Dataset**](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification?datasetId=81794&sortBy=voteCount)
+[**Télécharger le Dataset**](http://vision.stanford.edu/aditya86/ImageNetDogs/)
 
 ### Structure du Dataset
 
-Le dataset contient des images classifiées en 6 catégories. Voici la répartition des classes :
+Le dataset contient des images classifiées en 36 catégories. Voici la répartition de quelque classes :
 
-- **Cardboard**: 403 images
-- **Glass**: 501 images
-- **Metal**: 410 images
-- **Paper**: 594 images
-- **Plastic**: 482 images
-- **Trash**: 137 images
+- **Afghan_hound**: 239 images
+- **African_hunting_dog**: 169 images
+- **Blenheim_spaniel**: 188 images
+- **Borzoï**: 151 images
+- **Brabancon_griffon**: 153 images
+- **Cardigan**: 155 images
+
 
 Chaque image est placée dans un répertoire correspondant à sa classe. Assurez-vous que la structure des dossiers reflète cette distribution pour un traitement correct des données.
 
@@ -78,7 +79,7 @@ Chaque image est placée dans un répertoire correspondant à sa classe. Assurez
 ## Instructions d'Utilisation
 
 1. **Installation des Dépendances** : 
-   Assurez-vous que vous avez toutes les dépendances nécessaires en installant les packages listés dans `requirements.txt` :
+   Assurez-vous que vous avez toutes les dépendances nécessaires en installant les packages listés dans `requirements.txt` qui se trouve dans le dosssier /api :
    ```bash
    pip install -r requirements.txt
 
@@ -88,10 +89,10 @@ Chaque image est placée dans un répertoire correspondant à sa classe. Assurez
    Pour exécuter les notebooks, vous pouvez utiliser Jupyter Notebook
 
    - **CLI**:  
-  Pour obtenir une version des résultats de l'exécution du notebook, vous pouvez utiliser le fichier `run_garbage_classification.sh`. Ce script utilise la bibliothèque `papermill` pour exécuter le notebook et sauvegarder les résultats dans le dossier `logs` (qui sera automatiquement créé si nécessaire).  
+  Pour obtenir une version des résultats de l'exécution du notebook, vous pouvez utiliser le fichier `run_dog_classification.sh`. Ce script utilise la bibliothèque `papermill` pour exécuter le notebook et sauvegarder les résultats dans le dossier `logs` (qui sera automatiquement créé si nécessaire).  
 
-  a. Placez-vous dans le dossier `MLOPS_PROJECT`.  
+  a. Placez-vous dans le dossier `dog-breed-classifier`.  
   b. Exécutez les commandes suivantes :
 
 
-        sh run_garbage_classification.sh ou ./run_garbage_classification.sh
+        sh run_dog_classification.sh ou ./run_dog_classification.sh
