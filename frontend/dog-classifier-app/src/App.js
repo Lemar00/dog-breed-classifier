@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 
-const fakeDogBreeds = [
-  { breed: "Labrador Retriever", confidence: 87 },
-  { breed: "khadjou garage", confidence: 71 },
-  { breed: "kouty mbow mbow", confidence: 76 },
-];
-
 function App() {
   const [image, setImage] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const [fadeIn, setFadeIn] = useState(false);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -22,12 +15,31 @@ function App() {
     setPrediction(null);
     setLoading(true);
 
-    setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * fakeDogBreeds.length);
-      setPrediction(fakeDogBreeds[randomIndex]);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("http://localhost:8000/predict", {
+        method: "POST",
+        body: formData,
+      });
+      console.log("Réponse du backend :", response);
+      if (!response.ok) {
+        throw new Error("Erreur lors de la prédiction.");
+      }
+
+      const data = await response.json();
+      setPrediction({
+        breed: data.class,
+        confidence: (data.confidence * 100).toFixed(2),
+      });
+    } catch (error) {
+      console.error("Erreur backend :", error);
+      alert("Erreur lors de la prédiction. Vérifie que le backend tourne.");
+    } finally {
       setLoading(false);
       setFadeIn(true);
-    }, 1200);
+    }
   };
 
   return (
@@ -82,7 +94,7 @@ function App() {
         <h1
           style={{
             margin: 0,
-	   color: "#84bbfa",
+            color: "#84bbfa",
             fontWeight: "900",
             fontSize: 32,
             textShadow: "1px 1px 3px rgba(0,0,0,0.15)",
@@ -122,14 +134,6 @@ function App() {
           userSelect: "none",
           marginBottom: 30,
         }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.boxShadow =
-            "6px 6px 15px #3349b1, -6px -6px 15px #8ba2ff")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.boxShadow =
-            "4px 4px 10px #3c54d3, -4px -4px 10px #7fa0ff")
-        }
       >
         📁 Choisir une image de chien
       </label>
@@ -202,56 +206,58 @@ function App() {
                 🔎 Analyse en cours...
               </p>
             ) : (
-              <>
-                <h2
-                  style={{
-                    marginTop: 0,
-                    marginBottom: 15,
-                    fontWeight: "900",
-                    fontSize: 24,
-                    color: "#2c3e50",
-                    textShadow:
-                      "1px 1px 3px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  Race détectée : {prediction.breed}
-                </h2>
-                <div
-                  aria-label={`Confiance de ${prediction.confidence} pourcentage`}
-                  style={{
-                    background: "#e0e0e0",
-                    borderRadius: 15,
-                    height: 24,
-                    overflow: "hidden",
-                    boxShadow:
-                      "inset 2px 2px 5px #bababa, inset -2px -2px 5px #ffffff",
-                  }}
-                >
-                  <div
+              prediction && (
+                <>
+                  <h2
                     style={{
-                      width: `${prediction.confidence}%`,
-                      background:
-                        "linear-gradient(90deg, #4caf50, #81c784)",
-                      height: "100%",
-                      transition: "width 1s ease-in-out",
-                      borderRadius: 15,
-                      boxShadow:
-                        "0 3px 8px rgba(76,175,80,0.6)",
+                      marginTop: 0,
+                      marginBottom: 15,
+                      fontWeight: "900",
+                      fontSize: 24,
+                      color: "#2c3e50",
+                      textShadow:
+                        "1px 1px 3px rgba(0,0,0,0.1)",
                     }}
-                  />
-                </div>
-                <p
-                  style={{
-                    marginTop: 12,
-                    fontWeight: "700",
-                    color: "#3b3b3b",
-                    fontSize: 18,
-                    textShadow: "0 1px 1px #eee",
-                  }}
-                >
-                  Confiance : {prediction.confidence}%
-                </p>
-              </>
+                  >
+                    Race détectée : {prediction.breed}
+                  </h2>
+                  <div
+                    aria-label={`Confiance de ${prediction.confidence} pourcentage`}
+                    style={{
+                      background: "#e0e0e0",
+                      borderRadius: 15,
+                      height: 24,
+                      overflow: "hidden",
+                      boxShadow:
+                        "inset 2px 2px 5px #bababa, inset -2px -2px 5px #ffffff",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${prediction.confidence}%`,
+                        background:
+                          "linear-gradient(90deg, #4caf50, #81c784)",
+                        height: "100%",
+                        transition: "width 1s ease-in-out",
+                        borderRadius: 15,
+                        boxShadow:
+                          "0 3px 8px rgba(76,175,80,0.6)",
+                      }}
+                    />
+                  </div>
+                  <p
+                    style={{
+                      marginTop: 12,
+                      fontWeight: "700",
+                      color: "#3b3b3b",
+                      fontSize: 18,
+                      textShadow: "0 1px 1px #eee",
+                    }}
+                  >
+                    Confiance : {prediction.confidence}%
+                  </p>
+                </>
+              )
             )}
           </div>
         </div>
